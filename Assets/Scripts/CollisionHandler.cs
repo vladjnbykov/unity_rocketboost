@@ -5,9 +5,28 @@ using UnityEngine.SceneManagement;
 public class CollisionHandler : MonoBehaviour
 {
     [SerializeField] float levelLoadDelay = 1f;
+    [SerializeField] AudioClip crashObstacle;
+    [SerializeField] AudioClip finishSuccess;
+
+    [SerializeField] ParticleSystem successParticles;
+    [SerializeField] ParticleSystem crashParticles;
+
+
+    AudioSource audioSource; 
+    // ParticleSystem particleSys;
+
+    // State
+    bool isTransitioning = false;
+
+    void Start() 
+    {
+        audioSource = GetComponent<AudioSource>();
+    }
 
     void OnCollisionEnter(Collision other)
-    {
+
+    {   
+        if (isTransitioning) {return;}
         switch (other.gameObject.tag)
         {
             case "Friendly":
@@ -20,42 +39,41 @@ public class CollisionHandler : MonoBehaviour
         
             case "Finish":
                 StartSuccessSequence();
-                GetComponent<Movement>().enabled = false;
-                Invoke("LoadNextLevel", levelLoadDelay);
-                break;
-            
-            case "Fuel":
-                Debug.Log("Fuel");
+                // GetComponent<Movement>().enabled = false;
+                // Invoke("LoadNextLevel", levelLoadDelay);
                 break;
 
             default:
                 StartCrashSequence();
                 break;
         }
-
-        
-
     }
 
     void StartCrashSequence()
         {
-            // todo add SFX upon crash
             // todo add particle effect upon crash
+            isTransitioning = true;
+            audioSource.Stop();
+            audioSource.PlayOneShot(crashObstacle);
+
+            crashParticles.Play();
             
             GetComponent<Movement>().enabled = false;
             Invoke("ReloadLevel", levelLoadDelay);
         }
 
-
     void StartSuccessSequence()
         {
-            // todo add SFX upon crash
             // todo add particle effect upon crash
+            isTransitioning = true;
+            audioSource.Stop();
+            audioSource.PlayOneShot(finishSuccess);
+
+            successParticles.Play();
 
             GetComponent<Movement>().enabled = false;
             Invoke("LoadNextLevel", levelLoadDelay);
         }
-    
 
     void ReloadLevel()
     {
@@ -71,11 +89,9 @@ public class CollisionHandler : MonoBehaviour
         if (nextSceneIndex == SceneManager.sceneCountInBuildSettings)
         {
             nextSceneIndex = 0;
-
         }
         
         SceneManager.LoadScene(nextSceneIndex);
-        
     }
     
 }
