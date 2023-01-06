@@ -18,40 +18,52 @@ public class CollisionHandler : MonoBehaviour
     // State
     bool isTransitioning = false;
 
+    bool collisionDisabled = false;
+
     void Start() 
     {
         audioSource = GetComponent<AudioSource>();
+
+
+    }
+
+
+    void Update() 
+    {
+        BackDoorKeys();
+        
     }
 
     void OnCollisionEnter(Collision other)
 
     {   
-        if (isTransitioning) {return;}
+        
+        if (isTransitioning || collisionDisabled) {return;}
         switch (other.gameObject.tag)
         {
-            case "Friendly":
-                Debug.Log("friendly");
-                break;
-        
-            case "Start":
-                Debug.Log("Start");
-                break;
-        
-            case "Finish":
-                StartSuccessSequence();
-                // GetComponent<Movement>().enabled = false;
-                // Invoke("LoadNextLevel", levelLoadDelay);
-                break;
+        case "Friendly":
+            Debug.Log("friendly");
+            break;
+    
+        case "Start":
+            Debug.Log("Start");
+            break;
+    
+        case "Finish":
+            StartSuccessSequence();
+            // GetComponent<Movement>().enabled = false;
+            // Invoke("LoadNextLevel", levelLoadDelay);
+            break;
 
-            default:
-                StartCrashSequence();
-                break;
+        default:
+            StartCrashSequence();
+            break;
         }
+        
     }
 
     void StartCrashSequence()
         {
-            // todo add particle effect upon crash
             isTransitioning = true;
             audioSource.Stop();
             audioSource.PlayOneShot(crashObstacle);
@@ -64,7 +76,6 @@ public class CollisionHandler : MonoBehaviour
 
     void StartSuccessSequence()
         {
-            // todo add particle effect upon crash
             isTransitioning = true;
             audioSource.Stop();
             audioSource.PlayOneShot(finishSuccess);
@@ -92,6 +103,24 @@ public class CollisionHandler : MonoBehaviour
         }
         
         SceneManager.LoadScene(nextSceneIndex);
+    }
+
+
+
+    void BackDoorKeys()
+    {
+        if(Input.GetKeyDown(KeyCode.L))
+        {
+           LoadNextLevel();
+        }
+        else if(Input.GetKeyDown(KeyCode.C))
+        {
+            collisionDisabled = !collisionDisabled;
+        }
+        else
+        {
+           return;
+        }
     }
     
 }

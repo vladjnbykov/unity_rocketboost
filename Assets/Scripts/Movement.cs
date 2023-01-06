@@ -9,14 +9,10 @@ public class Movement : MonoBehaviour
     [SerializeField] float mainThrust = 100f; 
     [SerializeField] float rotationThrust = 100f;
     [SerializeField] AudioClip mainEngine;
-
-
-//
     [SerializeField] ParticleSystem mainBooster;
     [SerializeField] ParticleSystem sideThrusterRight;
     [SerializeField] ParticleSystem sideThrusterLeft;
 
-//
     public AudioSource audioSource; 
 
     // Start is called before the first frame update
